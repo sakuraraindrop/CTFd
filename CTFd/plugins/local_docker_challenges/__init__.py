@@ -342,7 +342,7 @@ def create_instance(challenge, source_id, user_id, team_id):
         "ctfd.source_id": str(source_id),
     }
 
-    args = ["run", "-d", "-P", "--name", container_name]
+    args = ["run", "-d", "-P", "--pull", "never", "--name", container_name]
     for key, value in labels.items():
         args.extend(["--label", f"{key}={value}"])
     args.append(challenge.docker_image)

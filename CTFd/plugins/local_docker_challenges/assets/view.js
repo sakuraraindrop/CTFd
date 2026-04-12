@@ -23,6 +23,9 @@
     $("#ldc-panel-stopped").show();
     $("#ldc-panel-started").hide();
     $("#ldc-connection-info").text("");
+    $("#ldc-connection-link").attr("href", "#");
+    setStatus("");
+    setBusy(false);
   }
 
   function runningPanel(data) {
@@ -30,6 +33,7 @@
     $("#ldc-panel-stopped").hide();
     $("#ldc-panel-started").show();
     $("#ldc-connection-info").text(data.connectionInfo || "");
+    $("#ldc-connection-link").attr("href", data.connectionInfo || "#");
     if (data.until) {
       $("#ldc-panel-until").show();
       const until = new Date(data.until);
@@ -43,6 +47,26 @@
       render();
       window.localDockerCountdown = setInterval(render, 1000);
     }
+  }
+
+  function setBusy(busy) {
+    const buttons = [
+      "#ldc-boot-button",
+      "#ldc-copy-button",
+      "#ldc-open-button",
+      "#ldc-renew-button",
+      "#ldc-destroy-button",
+      "#ldc-restart-button",
+    ];
+    buttons.forEach(selector => $(selector).prop("disabled", busy));
+  }
+
+  function setStatus(message) {
+    if (message) {
+      $("#ldc-inline-status").text(message).show();
+      return;
+    }
+    $("#ldc-inline-status").hide().text("");
   }
 
   function request(url, options, timeoutMs) {
@@ -109,6 +133,9 @@
       return;
     }
     const key = cacheKey(challenge.id);
+    const verb = method === "POST" ? "Starting container..." : method === "PATCH" ? "Renewing instance..." : "Destroying instance...";
+    setBusy(true);
+    setStatus(verb);
     return request(
       "/api/v1/plugins/local_docker_challenges/instance",
       {
@@ -122,7 +149,9 @@
       },
       30000,
     ).then(response => {
+      setBusy(false);
       if (!response.success) {
+        setStatus(response.message || "Operation failed");
         CTFd._functions.events.eventAlert({
           title: "Fail",
           html: response.message || "Operation failed",
@@ -138,12 +167,20 @@
         localStorage.removeItem(key);
       }
       loadInfo();
+      setStatus(successMessage || "");
       if (successMessage) {
         CTFd._functions.events.eventAlert({
           title: "Success",
           html: successMessage,
         });
       }
+    }).catch(error => {
+      setBusy(false);
+      setStatus(error.message || "Operation failed");
+      CTFd._functions.events.eventAlert({
+        title: "Fail",
+        html: error.message || "Operation failed",
+      });
     });
   }
 
@@ -160,6 +197,28 @@
     },
     restart() {
       return this.destroy().then(() => this.boot());
+    },
+    copyConnection() {
+      const value = $("#ldc-connection-info").text();
+      if (!value) {
+        return;
+      }
+      if (!navigator.clipboard || !navigator.clipboard.writeText) {
+        setStatus("Copy is unavailable in this browser. Open the link and copy it manually.");
+        return;
+      }
+      navigator.clipboard.writeText(value).then(() => {
+        setStatus("Connection link copied.");
+      }).catch(() => {
+        setStatus("Copy failed. Open the link and copy it manually.");
+      });
+    },
+    openConnection() {
+      const url = $("#ldc-connection-link").attr("href");
+      if (!url || url === "#") {
+        return;
+      }
+      window.open(url, "_blank", "noopener,noreferrer");
     },
   };
 

@@ -16,7 +16,7 @@
       <div class="card-body">
         <h5 class="card-title">Instance Info</h5>
         <p class="card-text text-muted">No running instance for this challenge.</p>
-        <button class="btn btn-primary" type="button" onclick="window.localDockerChallenge.boot()">
+        <button id="ldc-boot-button" class="btn btn-primary" type="button" onclick="window.localDockerChallenge.boot()">
           Launch Container
         </button>
       </div>
@@ -28,18 +28,27 @@
         <h6 id="ldc-panel-until" class="card-subtitle mb-2 text-muted" style="display: none;">
           Remaining Time: <span id="ldc-count-down"></span>
         </h6>
-        <code><span id="ldc-connection-info"></span></code>
+        <div class="mb-2">
+          <code><a id="ldc-connection-link" href="#" target="_blank" rel="noopener noreferrer"><span id="ldc-connection-info"></span></a></code>
+        </div>
         <div class="mt-3">
-          <button type="button" class="btn btn-success" onclick="window.localDockerChallenge.renew()">
+          <button id="ldc-copy-button" type="button" class="btn btn-outline-primary" onclick="window.localDockerChallenge.copyConnection()">
+            Copy Link
+          </button>
+          <button id="ldc-open-button" type="button" class="btn btn-outline-dark" onclick="window.localDockerChallenge.openConnection()">
+            Open
+          </button>
+          <button id="ldc-renew-button" type="button" class="btn btn-success" onclick="window.localDockerChallenge.renew()">
             Renew
           </button>
-          <button type="button" class="btn btn-danger" onclick="window.localDockerChallenge.destroy()">
+          <button id="ldc-destroy-button" type="button" class="btn btn-danger" onclick="window.localDockerChallenge.destroy()">
             Destroy
           </button>
-          <button type="button" class="btn btn-secondary" onclick="window.localDockerChallenge.restart()">
+          <button id="ldc-restart-button" type="button" class="btn btn-secondary" onclick="window.localDockerChallenge.restart()">
             Restart
           </button>
         </div>
+        <p id="ldc-inline-status" class="small text-muted mt-3 mb-0" style="display: none;"></p>
       </div>
     </div>
   </div>
