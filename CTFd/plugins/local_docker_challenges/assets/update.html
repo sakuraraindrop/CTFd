@@ -1,0 +1,98 @@
+{% extends "admin/challenges/update.html" %}
+
+{% block connection_info %}
+{% endblock %}
+
+{% block function %}
+<input type="hidden" name="function" value="static">
+{% endblock %}
+
+{% block initial %}{% endblock %}
+{% block decay %}{% endblock %}
+{% block minimum %}{% endblock %}
+
+{% block value %}
+<div class="form-group">
+	<label for="value">
+		Value<br>
+		<small class="form-text text-muted">
+			This is how many points teams will receive once they solve this challenge.
+		</small>
+	</label>
+	<input type="number" class="form-control chal-value" name="value" value="{{ challenge.value }}" required>
+</div>
+
+<div class="form-group">
+	<label>
+		Container Image:<br>
+		<small class="form-text text-muted">
+			Local image name already available to Docker.
+		</small>
+	</label>
+	<input type="text" class="form-control" name="docker_image" value="{{ challenge.docker_image }}" required>
+</div>
+
+<div class="form-group">
+	<label>
+		Container Port:<br>
+		<small class="form-text text-muted">
+			The internal container port to publish.
+		</small>
+	</label>
+	<input type="number" class="form-control" name="container_port" value="{{ challenge.container_port }}" required>
+</div>
+
+<div class="form-group">
+	<label>Port Protocol</label>
+	<select class="custom-select" name="port_protocol">
+		<option value="tcp" {% if challenge.port_protocol == "tcp" %}selected{% endif %}>tcp</option>
+		<option value="udp" {% if challenge.port_protocol == "udp" %}selected{% endif %}>udp</option>
+	</select>
+</div>
+
+<div class="form-group">
+	<label>Connection Scheme</label>
+	<select class="custom-select" name="connection_scheme">
+		<option value="http" {% if challenge.connection_scheme == "http" %}selected{% endif %}>http</option>
+		<option value="https" {% if challenge.connection_scheme == "https" %}selected{% endif %}>https</option>
+		<option value="tcp" {% if challenge.connection_scheme == "tcp" %}selected{% endif %}>tcp</option>
+		<option value="udp" {% if challenge.connection_scheme == "udp" %}selected{% endif %}>udp</option>
+	</select>
+</div>
+
+<div class="form-group">
+	<label>
+		Connection Host:<br>
+		<small class="form-text text-muted">
+			Returned to players together with the published host port.
+		</small>
+	</label>
+	<input type="text" class="form-control" name="connection_host" value="{{ challenge.connection_host }}" required>
+</div>
+
+<div class="form-group">
+	<label>
+		Timeout Seconds:<br>
+		<small class="form-text text-muted">
+			Auto-destroy instance after this many seconds. Use <code>0</code> to disable automatic cleanup.
+		</small>
+	</label>
+	<input type="number" class="form-control" name="timeout" value="{{ challenge.timeout }}" required>
+</div>
+
+<div class="form-group">
+	<label>Sharing</label>
+	<select class="custom-select" name="shared">
+		<option value="false" {% if not challenge.shared %}selected{% endif %}>Per user or team</option>
+		<option value="true" {% if challenge.shared %}selected{% endif %}>Shared instance</option>
+	</select>
+</div>
+
+<div class="form-group">
+	<label>Destroy On Flag</label>
+	<select class="custom-select" name="destroy_on_flag">
+		<option value="false" {% if not challenge.destroy_on_flag %}selected{% endif %}>Disabled</option>
+		<option value="true" {% if challenge.destroy_on_flag %}selected{% endif %}>Enabled</option>
+	</select>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+log line 0001: startup complete
+log line 0002: scheduler tick
+log line 0003: cache warmup ok
+log line 0004: user sync skipped
+log line 0005: metrics flush ok
+log line 0006: worker heartbeat
+log line 0007: archive rotation skipped
+log line 0008: noise packet accepted
+log line 0009: temporary marker abc123
+log line 0010: backup check complete
+debug: keep searching
+log line 0012: input stream stable
+flag{grep_beats_eyes}
+log line 0014: uploader idle
+log line 0015: checkpoint saved

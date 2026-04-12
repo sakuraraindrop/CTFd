@@ -1,0 +1,98 @@
+{% extends "admin/challenges/create.html" %}
+
+{% block header %}
+<div class="alert alert-secondary" role="alert">
+	Local Docker challenges run player or team instances directly from the local Docker daemon.
+</div>
+{% endblock %}
+
+{% block value %}
+<div class="form-group">
+	<label>
+		Value:<br>
+		<small class="form-text text-muted">
+			This is how many points are rewarded for solving this challenge.
+		</small>
+	</label>
+	<input type="number" class="form-control" name="value" placeholder="Enter value" required>
+</div>
+
+<div class="form-group">
+	<label>
+		Container Image:<br>
+		<small class="form-text text-muted">
+			Local image name already available to Docker, e.g. <code>my-web-challenge:latest</code>
+		</small>
+	</label>
+	<input type="text" class="form-control" name="docker_image" placeholder="Enter image name" required>
+</div>
+
+<div class="form-group">
+	<label>
+		Container Port:<br>
+		<small class="form-text text-muted">
+			The internal container port to publish, e.g. <code>8080</code>
+		</small>
+	</label>
+	<input type="number" class="form-control" name="container_port" placeholder="Enter internal port" required>
+</div>
+
+<div class="form-group">
+	<label>Port Protocol</label>
+	<select class="custom-select" name="port_protocol">
+		<option value="tcp" selected>tcp</option>
+		<option value="udp">udp</option>
+	</select>
+</div>
+
+<div class="form-group">
+	<label>Connection Scheme</label>
+	<select class="custom-select" name="connection_scheme">
+		<option value="http" selected>http</option>
+		<option value="https">https</option>
+		<option value="tcp">tcp</option>
+		<option value="udp">udp</option>
+	</select>
+</div>
+
+<div class="form-group">
+	<label>
+		Connection Host:<br>
+		<small class="form-text text-muted">
+			Returned to players together with the published host port. Keep <code>localhost</code> for local development.
+		</small>
+	</label>
+	<input type="text" class="form-control" name="connection_host" value="localhost" required>
+</div>
+
+<div class="form-group">
+	<label>
+		Timeout Seconds:<br>
+		<small class="form-text text-muted">
+			Auto-destroy instance after this many seconds. Use <code>0</code> to disable automatic cleanup.
+		</small>
+	</label>
+	<input type="number" class="form-control" name="timeout" value="900" required>
+</div>
+
+<div class="form-group">
+	<label>Sharing</label>
+	<select class="custom-select" name="shared">
+		<option value="false" selected>Per user or team</option>
+		<option value="true">Shared instance</option>
+	</select>
+</div>
+
+<div class="form-group">
+	<label>Destroy On Flag</label>
+	<select class="custom-select" name="destroy_on_flag">
+		<option value="false" selected>Disabled</option>
+		<option value="true">Enabled</option>
+	</select>
+</div>
+{% endblock %}
+
+{% block type %}
+<input type="hidden" value="local_docker" name="type" id="chaltype">
+<input type="hidden" value="static" name="function">
+{% endblock %}
