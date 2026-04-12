@@ -1,4 +1,13 @@
 (function () {
+  CTFd._internal.challenge.data = undefined;
+
+  // Keep the same interface as built-in challenge view scripts so core
+  // challenge rendering can invoke the lifecycle hooks safely.
+  CTFd._internal.challenge.renderer = null;
+  CTFd._internal.challenge.preRender = function () {};
+  CTFd._internal.challenge.render = null;
+  CTFd._internal.challenge.postRender = function () {};
+
   function getChallengeData() {
     if (window.Alpine && Alpine.store("challenge")) {
       return Alpine.store("challenge").data || {};
@@ -10,6 +19,55 @@
     return `CTFd:local-docker:instance_${challengeId}`;
   }
 
+  function node(selector) {
+    return document.querySelector(selector);
+  }
+
+  function show(selector) {
+    const el = node(selector);
+    if (el) {
+      el.style.display = "";
+    }
+  }
+
+  function hide(selector) {
+    const el = node(selector);
+    if (el) {
+      el.style.display = "none";
+    }
+  }
+
+  function setText(selector, value) {
+    const el = node(selector);
+    if (el) {
+      el.textContent = value;
+    }
+  }
+
+  function getText(selector) {
+    const el = node(selector);
+    return el ? el.textContent : "";
+  }
+
+  function setAttr(selector, name, value) {
+    const el = node(selector);
+    if (el) {
+      el.setAttribute(name, value);
+    }
+  }
+
+  function getAttr(selector, name) {
+    const el = node(selector);
+    return el ? el.getAttribute(name) : null;
+  }
+
+  function setDisabled(selector, disabled) {
+    const el = node(selector);
+    if (el) {
+      el.disabled = disabled;
+    }
+  }
+
   function toCountdown(ms) {
     const seconds = Math.floor((ms / 1000) % 60);
     const minutes = Math.floor((ms / (1000 * 60)) % 60);
@@ -18,31 +76,34 @@
   }
 
   function defaultPanel() {
-    $("#ldc-panel-loading").hide();
-    $("#ldc-panel-until").hide();
-    $("#ldc-panel-stopped").show();
-    $("#ldc-panel-started").hide();
-    $("#ldc-connection-info").text("");
-    $("#ldc-connection-link").attr("href", "#");
+    hide("#ldc-panel-loading");
+    hide("#ldc-panel-until");
+    show("#ldc-panel-stopped");
+    hide("#ldc-panel-started");
+    setText("#ldc-connection-info", "");
+    setAttr("#ldc-connection-link", "href", "#");
     setStatus("");
     setBusy(false);
   }
 
   function runningPanel(data) {
     defaultPanel();
-    $("#ldc-panel-stopped").hide();
-    $("#ldc-panel-started").show();
-    $("#ldc-connection-info").text(data.connectionInfo || "");
-    $("#ldc-connection-link").attr("href", data.connectionInfo || "#");
+    hide("#ldc-panel-stopped");
+    show("#ldc-panel-started");
+    setText("#ldc-connection-info", data.connectionInfo || "");
+    setAttr("#ldc-connection-link", "href", data.connectionInfo || "#");
     if (data.until) {
-      $("#ldc-panel-until").show();
+      show("#ldc-panel-until");
       const until = new Date(data.until);
       if (window.localDockerCountdown) {
         clearInterval(window.localDockerCountdown);
       }
       const render = () => {
         const remaining = until - new Date();
-        $("#ldc-count-down").text(remaining > 0 ? toCountdown(remaining) : "Expiring...");
+        setText(
+          "#ldc-count-down",
+          remaining > 0 ? toCountdown(remaining) : "Expiring...",
+        );
       };
       render();
       window.localDockerCountdown = setInterval(render, 1000);
@@ -58,15 +119,17 @@
       "#ldc-destroy-button",
       "#ldc-restart-button",
     ];
-    buttons.forEach(selector => $(selector).prop("disabled", busy));
+    buttons.forEach(selector => setDisabled(selector, busy));
   }
 
   function setStatus(message) {
     if (message) {
-      $("#ldc-inline-status").text(message).show();
+      setText("#ldc-inline-status", message);
+      show("#ldc-inline-status");
       return;
     }
-    $("#ldc-inline-status").hide().text("");
+    hide("#ldc-inline-status");
+    setText("#ldc-inline-status", "");
   }
 
   function request(url, options, timeoutMs) {
@@ -199,7 +262,7 @@
       return this.destroy().then(() => this.boot());
     },
     copyConnection() {
-      const value = $("#ldc-connection-info").text();
+      const value = getText("#ldc-connection-info");
       if (!value) {
         return;
       }
@@ -214,7 +277,7 @@
       });
     },
     openConnection() {
-      const url = $("#ldc-connection-link").attr("href");
+      const url = getAttr("#ldc-connection-link", "href");
       if (!url || url === "#") {
         return;
       }
