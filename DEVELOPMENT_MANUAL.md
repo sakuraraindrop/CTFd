@@ -39,6 +39,9 @@ activate ctfd-win
 python serve.py --port 8000 --disable-gevent
 ```
 
+测试用管理员账号：chengxing
+测试用管理员密码：20038239ys
+
 ### 2.2 当前本地测试地址
 
 - `http://127.0.0.1:8000/`
@@ -360,7 +363,7 @@ rg -n "/api/v1/plugins/local_docker_challenges/instance" CTFd
 
 ```text
 项目在 D:\project\ctfd。
-这是一个基于上游 CTFd 的定制分支，当前主要分支是 dev/windows-deploy，核心自定义功能是 local_docker 题型。
+这是一个基于上游 CTFd 的定制分支，当前主要分支是 dev/windows-deploy，目前核心自定义功能是 local_docker 题型。
 
 先不要直接改代码，请按这个顺序工作：
 1. 阅读 DEVELOPMENT_MANUAL.md

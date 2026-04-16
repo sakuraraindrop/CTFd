@@ -1,2 +1,4 @@
+conda create -n ctfd-win python=3.11
 activate ctfd-win
+pip install -r requirements.txt
 python serve.py --port 8000 --disable-gevent
