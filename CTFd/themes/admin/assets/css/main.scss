@@ -6,6 +6,22 @@
 @import "includes/opacity.scss";
 @import "includes/min-height.scss";
 
+:root {
+  --orbit-admin-bg: #09111c;
+  --orbit-admin-bg-alt: #101d31;
+  --orbit-admin-surface: rgba(11, 20, 34, 0.92);
+  --orbit-admin-surface-soft: rgba(15, 28, 46, 0.84);
+  --orbit-admin-border: rgba(107, 190, 255, 0.18);
+  --orbit-admin-border-strong: rgba(107, 190, 255, 0.34);
+  --orbit-admin-text: #e7f2ff;
+  --orbit-admin-muted: #8ea7c3;
+  --orbit-admin-accent: #69d2ff;
+  --orbit-admin-accent-strong: #1791d1;
+  --orbit-admin-warm: #ffca68;
+  --orbit-admin-success: #75e7bc;
+  --orbit-admin-shadow: 0 22px 50px rgba(0, 0, 0, 0.28);
+}
+
 html,
 body,
 .container {
@@ -19,14 +35,95 @@ h2 {
   letter-spacing: 2px;
 }
 
+body.orbit-admin-shell {
+  min-height: 100vh;
+  color: var(--orbit-admin-text);
+  background:
+    radial-gradient(circle at top left, rgba(31, 122, 188, 0.18), transparent 24%),
+    radial-gradient(circle at top right, rgba(255, 202, 104, 0.08), transparent 20%),
+    linear-gradient(180deg, var(--orbit-admin-bg) 0%, var(--orbit-admin-bg-alt) 100%);
+}
+
+.orbit-admin-main {
+  padding-bottom: 4rem;
+}
+
+.orbit-admin-nav {
+  background: rgba(5, 10, 17, 0.88) !important;
+  border-bottom: 1px solid var(--orbit-admin-border);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.24);
+}
+
+.orbit-admin-nav .nav-link,
+.orbit-admin-nav .navbar-brand,
+.orbit-admin-nav .dropdown-toggle {
+  color: var(--orbit-admin-text) !important;
+}
+
+.orbit-admin-nav .nav-link,
+.orbit-admin-nav .dropdown-toggle {
+  opacity: 0.82;
+  transition:
+    color 0.2s ease,
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.orbit-admin-nav .nav-link:hover,
+.orbit-admin-nav .dropdown-toggle:hover,
+.orbit-admin-nav .nav-link:focus,
+.orbit-admin-nav .dropdown-toggle:focus {
+  color: var(--orbit-admin-accent) !important;
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+.orbit-admin-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.orbit-admin-brand__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(105, 210, 255, 0.2), rgba(255, 202, 104, 0.2));
+  border: 1px solid var(--orbit-admin-border-strong);
+  box-shadow: 0 0 0 4px rgba(105, 210, 255, 0.08);
+  color: var(--orbit-admin-accent);
+}
+
+.orbit-admin-brand__text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+
+.orbit-admin-brand__title {
+  font-family: "Raleway", "RalewayOffline", sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.orbit-admin-brand__subtitle {
+  color: var(--orbit-admin-muted);
+  font-size: 0.68rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
 a {
-  color: #337ab7;
+  color: var(--orbit-admin-accent);
   text-decoration: none;
 }
 
 table > thead > tr > td {
-  /* Remove border line from thead of all tables */
-  /* It can overlap with other element styles */
   border-top: none !important;
 }
 
@@ -53,12 +150,20 @@ blockquote {
 .jumbotron {
   border-radius: 0;
   text-align: center;
+  margin-bottom: 2rem;
+  border: 1px solid var(--orbit-admin-border);
+  border-left: none;
+  border-right: none;
+  background:
+    linear-gradient(135deg, rgba(105, 210, 255, 0.13), rgba(255, 202, 104, 0.08)),
+    var(--orbit-admin-surface);
+  box-shadow: var(--orbit-admin-shadow);
 }
 
 .form-control:focus {
   background-color: transparent;
-  border-color: #a3d39c;
-  box-shadow: 0 0 0 0.1rem #a3d39c;
+  border-color: var(--orbit-admin-accent);
+  box-shadow: 0 0 0 0.12rem rgba(105, 210, 255, 0.22);
   transition:
     background-color 0.3s,
     border-color 0.3s;
@@ -66,8 +171,8 @@ blockquote {
 
 .input-filled-valid {
   background-color: transparent !important;
-  border-color: #a3d39c;
-  box-shadow: 0 0 0 0.1rem #a3d39c;
+  border-color: var(--orbit-admin-success);
+  box-shadow: 0 0 0 0.1rem rgba(117, 231, 188, 0.28);
   transition:
     background-color 0.3s,
     border-color 0.3s;
@@ -76,7 +181,7 @@ blockquote {
 .input-filled-invalid {
   background-color: transparent !important;
   border-color: #d46767;
-  box-shadow: 0 0 0 0.1rem #d46767;
+  box-shadow: 0 0 0 0.1rem rgba(212, 103, 103, 0.28);
   transition:
     background-color 0.3s,
     border-color 0.3s;
@@ -84,13 +189,13 @@ blockquote {
 
 .btn-outlined.btn-theme {
   background: none;
-  color: #545454;
-  border-color: #545454;
+  color: var(--orbit-admin-muted);
+  border-color: var(--orbit-admin-muted);
   border: 3px solid;
 }
 
 .btn-outlined {
-  border-radius: 0;
+  border-radius: 14px;
   -webkit-transition: all 0.3s;
   -moz-transition: all 0.3s;
   transition: all 0.3s;
@@ -100,7 +205,7 @@ blockquote {
   letter-spacing: 1px;
   text-decoration: none;
   -moz-user-select: none;
-  border-radius: 0;
+  border-radius: 14px;
   cursor: pointer;
   display: inline-block;
   margin-bottom: 0;
@@ -112,17 +217,20 @@ blockquote {
   padding: 8px 20px;
 }
 
-.btn-info {
-  background-color: #5b7290 !important;
-  border-color: #5b7290 !important;
+.btn-info,
+.btn-primary {
+  background: linear-gradient(135deg, var(--orbit-admin-accent-strong), var(--orbit-admin-accent)) !important;
+  border-color: transparent !important;
+  color: #06111d !important;
 }
 
 .badge-info {
-  background-color: #5b7290 !important;
+  background-color: rgba(105, 210, 255, 0.16) !important;
+  color: var(--orbit-admin-accent) !important;
 }
 
 .alert {
-  border-radius: 0 !important;
+  border-radius: 16px !important;
   padding: 0.8em;
 }
 
@@ -143,9 +251,12 @@ blockquote {
 }
 
 .modal-content {
-  -webkit-border-radius: 0 !important;
-  -moz-border-radius: 0 !important;
-  border-radius: 0 !important;
+  -webkit-border-radius: 20px !important;
+  -moz-border-radius: 20px !important;
+  border-radius: 20px !important;
+  background: var(--orbit-admin-surface);
+  border: 1px solid var(--orbit-admin-border);
+  box-shadow: var(--orbit-admin-shadow);
 }
 
 .fa-disabled {
@@ -157,4 +268,116 @@ blockquote {
   vertical-align: top;
   margin-left: -1.5em;
   font-size: 50%;
+}
+
+.admin-hero-subtitle {
+  margin-top: 0.8rem;
+  color: var(--orbit-admin-muted);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.card,
+.dropdown-menu,
+.table,
+.modal-content,
+.list-group-item,
+.filter-list {
+  background: var(--orbit-admin-surface);
+  border-color: var(--orbit-admin-border) !important;
+  color: var(--orbit-admin-text);
+  box-shadow: var(--orbit-admin-shadow);
+}
+
+.table {
+  background: transparent;
+  color: var(--orbit-admin-text);
+}
+
+.table thead th,
+.table thead td {
+  border-bottom-color: var(--orbit-admin-border-strong);
+  color: var(--orbit-admin-muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.table td,
+.table th {
+  border-top-color: var(--orbit-admin-border);
+}
+
+.form-control,
+.custom-select,
+.dropdown-menu,
+.btn-outline-secondary,
+.btn-outline-danger,
+.btn-outline-primary {
+  background: rgba(255, 255, 255, 0.02);
+  border-color: var(--orbit-admin-border) !important;
+  color: var(--orbit-admin-text);
+}
+
+.dropdown-item,
+.dropdown-item-text {
+  color: var(--orbit-admin-text) !important;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus,
+.dropdown-item.active,
+.dropdown-item:active {
+  background: rgba(105, 210, 255, 0.14) !important;
+  color: var(--orbit-admin-text) !important;
+}
+
+.custom-select,
+.form-control {
+  border-radius: 14px;
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-danger:hover,
+.btn-outline-primary:hover {
+  background: rgba(105, 210, 255, 0.12);
+  color: var(--orbit-admin-text);
+}
+
+.badge-success,
+.badge-danger,
+.badge-warning {
+  border-radius: 999px;
+  padding: 0.45rem 0.7rem;
+}
+
+.badge-success {
+  background: rgba(117, 231, 188, 0.14);
+  color: var(--orbit-admin-success);
+}
+
+.badge-danger {
+  background: rgba(255, 125, 125, 0.14);
+  color: #ff9f9f;
+}
+
+.badge-warning {
+  background: rgba(255, 202, 104, 0.16);
+  color: var(--orbit-admin-warm);
+}
+
+.footer {
+  background: transparent;
+}
+
+.footer a,
+.footer small,
+.text-muted {
+  color: var(--orbit-admin-muted) !important;
+}
+
+@media (max-width: 767.98px) {
+  .orbit-admin-brand__subtitle {
+    letter-spacing: 0.18em;
+  }
 }

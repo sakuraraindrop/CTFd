@@ -39,10 +39,10 @@
 
   {{ Configs.theme_header }}
 </head>
-<body>
+<body class="orbit-shell">
 {% include "components/navbar.html" %}
 
-<main role="main">
+<main role="main" class="orbit-main">
   {% block content %}
   {% endblock %}
 </main>

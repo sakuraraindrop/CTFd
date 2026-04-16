@@ -26,9 +26,11 @@ from CTFd.constants.config import (
 from CTFd.constants.themes import DEFAULT_THEME
 from CTFd.models import (
     Admins,
+    Challenges,
     Files,
     Notifications,
     Pages,
+    Solves,
     Solutions,
     Teams,
     Users,
@@ -360,6 +362,15 @@ def static_html(route):
     else:
         if page.auth_required and authed() is False:
             return redirect(url_for("auth.login", next=request.full_path))
+
+        if page.route == "index":
+            return render_template(
+                "home.html",
+                title=get_config("ctf_name") or page.title,
+                challenge_count=Challenges.query.count(),
+                category_count=db.session.query(Challenges.category).distinct().count(),
+                solve_count=Solves.query.count(),
+            )
 
         return render_template("page.html", content=page.html, title=page.title)
 

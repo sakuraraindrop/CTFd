@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="container home-shell">
+    <section class="home-hero">
+      <div class="home-hero__copy">
+        <span class="home-hero__eyebrow">卫星网络安全竞赛平台</span>
+        <h1>卫星网络安全竞赛</h1>
+        <p class="home-hero__lead">
+          面向卫星链路、空间平台与地面网络的综合攻防演练平台，聚焦真实业务链路下的渗透、利用、分析与防护能力。
+        </p>
+        <p class="home-hero__subtle">
+          赛题覆盖二进制、Web、安全运维、协议分析与容器化对抗场景，兼顾选手体验与裁判管理效率。
+        </p>
+
+        <div class="home-hero__actions">
+          <a class="btn btn-primary btn-lg" href="{{ url_for('challenges.listing') }}">
+            进入赛题区
+          </a>
+          {% if Configs.score_visibility != 'admins' %}
+            <a class="btn btn-outline-primary btn-lg" href="{{ url_for('scoreboard.listing') }}">
+              查看排行榜
+            </a>
+          {% endif %}
+          {% if not authed() %}
+            <a class="btn btn-outline-secondary btn-lg" href="{{ url_for('auth.login') }}">
+              登录平台
+            </a>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="home-hero__visual" aria-hidden="true">
+        <div class="home-hero__planet-glow"></div>
+        <div class="home-hero__planet"></div>
+        <div class="home-hero__orbit home-hero__orbit--outer"></div>
+        <div class="home-hero__orbit home-hero__orbit--mid"></div>
+        <div class="home-hero__orbit home-hero__orbit--inner"></div>
+        <div class="home-hero__satellite home-hero__satellite--alpha">
+          <i class="fas fa-satellite"></i>
+        </div>
+        <div class="home-hero__satellite home-hero__satellite--beta">
+          <i class="fas fa-shield-halved"></i>
+        </div>
+        <div class="home-hero__signal home-hero__signal--one"></div>
+        <div class="home-hero__signal home-hero__signal--two"></div>
+      </div>
+    </section>
+
+    <section class="home-stats">
+      <article class="home-stat">
+        <span class="home-stat__label">赛题数量</span>
+        <strong class="home-stat__value">{{ challenge_count }}</strong>
+      </article>
+      <article class="home-stat">
+        <span class="home-stat__label">分类数量</span>
+        <strong class="home-stat__value">{{ category_count }}</strong>
+      </article>
+      <article class="home-stat">
+        <span class="home-stat__label">提交记录</span>
+        <strong class="home-stat__value">{{ solve_count }}</strong>
+      </article>
+    </section>
+
+    <section class="home-grid">
+      <article class="home-feature">
+        <span class="home-feature__icon"><i class="fas fa-satellite-dish"></i></span>
+        <h2>空间链路场景</h2>
+        <p>围绕卫星通信、遥测遥控与地面站交互设计题目，贴近真实空间网络业务链路。</p>
+      </article>
+      <article class="home-feature">
+        <span class="home-feature__icon"><i class="fas fa-user-shield"></i></span>
+        <h2>攻防流程完整</h2>
+        <p>从信息收集、利用、横向到修复分析，覆盖完整竞赛路径，便于选手持续推进。</p>
+      </article>
+      <article class="home-feature">
+        <span class="home-feature__icon"><i class="fas fa-cubes"></i></span>
+        <h2>实例环境联动</h2>
+        <p>支持容器化实例题，便于开展动态环境赛题与实操型考核。</p>
+      </article>
+    </section>
+  </div>
+{% endblock %}

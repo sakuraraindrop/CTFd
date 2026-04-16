@@ -10,28 +10,29 @@
 }
 
 .modal-content {
-  border-radius: 0px;
+  border-radius: 20px;
   max-width: 1000px;
   padding: 1em;
   margin: 0 auto;
 }
 
 .btn-info {
-  background-color: #5b7290 !important;
+  background: linear-gradient(135deg, var(--orbit-admin-accent-strong), var(--orbit-admin-accent)) !important;
 }
 
 .badge-info {
-  background-color: #5b7290 !important;
+  background-color: rgba(105, 210, 255, 0.16) !important;
+  color: var(--orbit-admin-accent) !important;
 }
 
 .challenge-button {
-  box-shadow: 3px 3px 3px grey;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.2);
 }
 
 .solved-challenge {
-  background-color: #37d63e !important;
-  opacity: 0.4;
-  border: none;
+  background: rgba(117, 231, 188, 0.18) !important;
+  opacity: 0.72;
+  border: 1px solid rgba(117, 231, 188, 0.28);
 }
 
 .corner-button-check {
@@ -49,9 +50,9 @@
   position: relative;
   display: block;
   padding: 0.8em;
-  border-radius: 0;
-  background: #f0f0f0;
-  color: #aaa;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--orbit-admin-text);
   font-weight: 400;
   font-family: "Avenir Next", "Helvetica Neue", Helvetica, Arial, sans-serif;
   -webkit-appearance: none;
@@ -60,9 +61,20 @@
 
 #challenge-window .form-control:focus {
   background-color: transparent;
-  border-color: #a3d39c;
-  box-shadow: 0 0 0 0.1rem #a3d39c;
+  border-color: var(--orbit-admin-accent);
+  box-shadow: 0 0 0 0.12rem rgba(105, 210, 255, 0.18);
   transition:
     background-color 0.3s,
     border-color 0.3s;
+}
+
+#challenges {
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--orbit-admin-surface-soft);
+  border-color: var(--orbit-admin-border) !important;
+}
+
+#challenges thead {
+  background: rgba(105, 210, 255, 0.08);
 }

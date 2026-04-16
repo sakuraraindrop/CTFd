@@ -8,6 +8,9 @@
   CTFd._internal.challenge.render = null;
   CTFd._internal.challenge.postRender = function () {};
 
+  let activeLoadToken = 0;
+  let modalCleanupBound = false;
+
   function getChallengeData() {
     if (window.Alpine && Alpine.store("challenge")) {
       return Alpine.store("challenge").data || {};
@@ -19,8 +22,13 @@
     return `CTFd:local-docker:instance_${challengeId}`;
   }
 
+  function getModalRoot() {
+    return document.querySelector("#challenge-window");
+  }
+
   function node(selector) {
-    return document.querySelector(selector);
+    const root = getModalRoot();
+    return root ? root.querySelector(selector) : null;
   }
 
   function show(selector) {
@@ -68,46 +76,18 @@
     }
   }
 
+  function clearCountdown() {
+    if (window.localDockerCountdown) {
+      clearInterval(window.localDockerCountdown);
+      window.localDockerCountdown = null;
+    }
+  }
+
   function toCountdown(ms) {
     const seconds = Math.floor((ms / 1000) % 60);
     const minutes = Math.floor((ms / (1000 * 60)) % 60);
     const hours = Math.floor((ms / (1000 * 60 * 60)) % 24);
     return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-  }
-
-  function defaultPanel() {
-    hide("#ldc-panel-loading");
-    hide("#ldc-panel-until");
-    show("#ldc-panel-stopped");
-    hide("#ldc-panel-started");
-    setText("#ldc-connection-info", "");
-    setAttr("#ldc-connection-link", "href", "#");
-    setStatus("");
-    setBusy(false);
-  }
-
-  function runningPanel(data) {
-    defaultPanel();
-    hide("#ldc-panel-stopped");
-    show("#ldc-panel-started");
-    setText("#ldc-connection-info", data.connectionInfo || "");
-    setAttr("#ldc-connection-link", "href", data.connectionInfo || "#");
-    if (data.until) {
-      show("#ldc-panel-until");
-      const until = new Date(data.until);
-      if (window.localDockerCountdown) {
-        clearInterval(window.localDockerCountdown);
-      }
-      const render = () => {
-        const remaining = until - new Date();
-        setText(
-          "#ldc-count-down",
-          remaining > 0 ? toCountdown(remaining) : "Expiring...",
-        );
-      };
-      render();
-      window.localDockerCountdown = setInterval(render, 1000);
-    }
   }
 
   function setBusy(busy) {
@@ -132,6 +112,55 @@
     setText("#ldc-inline-status", "");
   }
 
+  function showLoadingPanel() {
+    clearCountdown();
+    show("#ldc-panel-loading");
+    hide("#ldc-panel-stopped");
+    hide("#ldc-panel-started");
+    hide("#ldc-panel-until");
+    setText("#ldc-connection-info", "");
+    setAttr("#ldc-connection-link", "href", "#");
+    setStatus("");
+    setBusy(false);
+  }
+
+  function defaultPanel() {
+    clearCountdown();
+    hide("#ldc-panel-loading");
+    hide("#ldc-panel-until");
+    show("#ldc-panel-stopped");
+    hide("#ldc-panel-started");
+    setText("#ldc-connection-info", "");
+    setAttr("#ldc-connection-link", "href", "#");
+    setStatus("");
+    setBusy(false);
+  }
+
+  function runningPanel(data) {
+    defaultPanel();
+    hide("#ldc-panel-stopped");
+    show("#ldc-panel-started");
+    setText("#ldc-connection-info", data.connectionInfo || "");
+    setAttr("#ldc-connection-link", "href", data.connectionInfo || "#");
+
+    if (data.until) {
+      show("#ldc-panel-until");
+      const until = new Date(data.until);
+
+      const render = () => {
+        const remaining = until - new Date();
+        setText(
+          "#ldc-count-down",
+          remaining > 0 ? toCountdown(remaining) : "即将到期...",
+        );
+      };
+
+      render();
+      clearCountdown();
+      window.localDockerCountdown = setInterval(render, 1000);
+    }
+  }
+
   function request(url, options, timeoutMs) {
     return Promise.race([
       CTFd.fetch(url, options).then(response => response.json()),
@@ -139,13 +168,39 @@
     ]);
   }
 
-  function loadInfo() {
-    const challenge = getChallengeData();
-    if (!challenge.id) {
+  function bindModalCleanup() {
+    const root = getModalRoot();
+    if (!root || modalCleanupBound) {
       return;
     }
+
+    root.addEventListener("hidden.bs.modal", () => {
+      clearCountdown();
+      setStatus("");
+      setBusy(false);
+      activeLoadToken += 1;
+    });
+
+    modalCleanupBound = true;
+  }
+
+  function loadInfo(retryCount = 0) {
+    bindModalCleanup();
+
+    const challenge = getChallengeData();
+    if (!challenge.id) {
+      if (retryCount < 6) {
+        setTimeout(() => loadInfo(retryCount + 1), 50);
+      } else {
+        defaultPanel();
+      }
+      return;
+    }
+
+    const loadToken = ++activeLoadToken;
     const key = cacheKey(challenge.id);
     const cached = localStorage.getItem(key);
+
     if (cached) {
       try {
         const parsed = JSON.parse(cached);
@@ -161,6 +216,8 @@
       }
     }
 
+    showLoadingPanel();
+
     request(
       `/api/v1/plugins/local_docker_challenges/instance?challengeId=${challenge.id}`,
       {
@@ -174,6 +231,10 @@
       4000,
     )
       .then(response => {
+        if (loadToken !== activeLoadToken) {
+          return;
+        }
+
         if (response.success && response.data && response.data.since) {
           localStorage.setItem(
             key,
@@ -182,10 +243,14 @@
           runningPanel(response.data);
           return;
         }
+
         localStorage.removeItem(key);
         defaultPanel();
       })
       .catch(() => {
+        if (loadToken !== activeLoadToken) {
+          return;
+        }
         defaultPanel();
       });
   }
@@ -193,12 +258,20 @@
   function mutate(method, successMessage) {
     const challenge = getChallengeData();
     if (!challenge.id) {
-      return;
+      return Promise.resolve();
     }
+
     const key = cacheKey(challenge.id);
-    const verb = method === "POST" ? "Starting container..." : method === "PATCH" ? "Renewing instance..." : "Destroying instance...";
+    const verb =
+      method === "POST"
+        ? "正在启动容器..."
+        : method === "PATCH"
+          ? "正在续期实例..."
+          : "正在销毁实例...";
+
     setBusy(true);
     setStatus(verb);
+
     return request(
       "/api/v1/plugins/local_docker_challenges/instance",
       {
@@ -211,52 +284,58 @@
         body: JSON.stringify({ challengeId: challenge.id }),
       },
       30000,
-    ).then(response => {
-      setBusy(false);
-      if (!response.success) {
-        setStatus(response.message || "Operation failed");
+    )
+      .then(response => {
+        setBusy(false);
+
+        if (!response.success) {
+          setStatus(response.message || "操作失败");
+          CTFd._functions.events.eventAlert({
+            title: "失败",
+            html: response.message || "操作失败",
+          });
+          return;
+        }
+
+        if (response.data && response.data.since) {
+          localStorage.setItem(
+            key,
+            JSON.stringify({ data: response.data, receivedAt: new Date().toISOString() }),
+          );
+        } else {
+          localStorage.removeItem(key);
+        }
+
+        loadInfo();
+        setStatus(successMessage || "");
+
+        if (successMessage) {
+          CTFd._functions.events.eventAlert({
+            title: "成功",
+            html: successMessage,
+          });
+        }
+      })
+      .catch(error => {
+        setBusy(false);
+        setStatus(error.message || "操作失败");
         CTFd._functions.events.eventAlert({
-          title: "Fail",
-          html: response.message || "Operation failed",
+          title: "失败",
+          html: error.message || "操作失败",
         });
-        return;
-      }
-      if (response.data && response.data.since) {
-        localStorage.setItem(
-          key,
-          JSON.stringify({ data: response.data, receivedAt: new Date().toISOString() }),
-        );
-      } else {
-        localStorage.removeItem(key);
-      }
-      loadInfo();
-      setStatus(successMessage || "");
-      if (successMessage) {
-        CTFd._functions.events.eventAlert({
-          title: "Success",
-          html: successMessage,
-        });
-      }
-    }).catch(error => {
-      setBusy(false);
-      setStatus(error.message || "Operation failed");
-      CTFd._functions.events.eventAlert({
-        title: "Fail",
-        html: error.message || "Operation failed",
       });
-    });
   }
 
   window.localDockerChallenge = {
     loadInfo,
     boot() {
-      return mutate("POST", "Container instance created.");
+      return mutate("POST", "容器实例已创建。");
     },
     renew() {
-      return mutate("PATCH", "Container instance renewed.");
+      return mutate("PATCH", "容器实例已续期。");
     },
     destroy() {
-      return mutate("DELETE", "Container instance destroyed.");
+      return mutate("DELETE", "容器实例已销毁。");
     },
     restart() {
       return this.destroy().then(() => this.boot());
@@ -266,15 +345,19 @@
       if (!value) {
         return;
       }
+
       if (!navigator.clipboard || !navigator.clipboard.writeText) {
-        setStatus("Copy is unavailable in this browser. Open the link and copy it manually.");
+        setStatus("当前浏览器不支持复制，请手动复制。");
         return;
       }
-      navigator.clipboard.writeText(value).then(() => {
-        setStatus("Connection link copied.");
-      }).catch(() => {
-        setStatus("Copy failed. Open the link and copy it manually.");
-      });
+
+      navigator.clipboard.writeText(value)
+        .then(() => {
+          setStatus("链接已复制。");
+        })
+        .catch(() => {
+          setStatus("复制失败，请手动复制。");
+        });
     },
     openConnection() {
       const url = getAttr("#ldc-connection-link", "href");

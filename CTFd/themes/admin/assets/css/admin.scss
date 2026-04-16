@@ -1,15 +1,14 @@
 @import "includes/sticky-footer.css";
 
 .section-title {
-  border-top: 1px solid lightgray;
-  margin: 15px 0 5px 0;
+  border-top: 1px solid var(--orbit-admin-border);
+  margin: 15px 0 5px;
   font-size: 14px;
   font-weight: bold;
   padding: 10px 0 0 20px;
-  color: #636c76;
+  color: var(--orbit-admin-muted);
 }
 
-// Intended for the Bootstrap navbar icons
 .action-icon {
   margin-right: 8px;
   display: inline-block;
@@ -17,7 +16,6 @@
   text-align: center;
 }
 
-// Custom color picker on Theme page
 input[type="color"].custom-color-picker {
   padding: 5px;
   margin-right: 8px;
@@ -27,40 +25,23 @@ input[type="color"].custom-color-picker {
   vertical-align: middle;
 }
 
-#score-graph {
+#score-graph,
+#keys-pie-graph,
+#categories-pie-graph,
+#points-pie-graph,
+#solve-percentages-graph,
+#score-distribution-graph {
   min-height: 400px;
   display: block;
+}
+
+#score-graph {
   clear: both;
 }
 
 #solves-graph {
   display: block;
   height: 350px;
-}
-
-#keys-pie-graph {
-  min-height: 400px;
-  display: block;
-}
-
-#categories-pie-graph {
-  min-height: 400px;
-  display: block;
-}
-
-#points-pie-graph {
-  min-height: 400px;
-  display: block;
-}
-
-#solve-percentages-graph {
-  min-height: 400px;
-  display: block;
-}
-
-#score-distribution-graph {
-  min-height: 400px;
-  display: block;
 }
 
 .no-decoration {
@@ -87,17 +68,14 @@ pre {
 .form-control {
   position: relative;
   display: block;
-  /*padding: 0.8em;*/
-  border-radius: 0;
-  /*background: #f0f0f0;*/
-  /*color: #aaa;*/
+  border-radius: 14px;
   font-weight: 400;
   font-family: "Avenir Next", "Helvetica Neue", Helvetica, Arial, sans-serif;
   -webkit-appearance: none;
 }
 
 tbody tr:hover {
-  background-color: rgba(0, 0, 0, 0.1) !important;
+  background-color: rgba(105, 210, 255, 0.08) !important;
 }
 
 [data-href] {
@@ -113,9 +91,9 @@ input[type="checkbox"] {
 }
 
 .card-radio:checked + .card {
-  background-color: transparent !important;
-  border-color: #a3d39c;
-  box-shadow: 0 0 0 0.1rem #a3d39c;
+  background-color: rgba(105, 210, 255, 0.05) !important;
+  border-color: var(--orbit-admin-accent);
+  box-shadow: 0 0 0 0.12rem rgba(105, 210, 255, 0.18);
   transition:
     background-color 0.3s,
     border-color 0.3s;
@@ -129,31 +107,34 @@ input[type="checkbox"] {
   cursor: pointer;
 }
 
-/* Scoreboard Matrix Styles */
 .matrix-container {
   max-height: 600px;
   overflow: auto;
-  padding-bottom: 10px; // horizontal scroll
+  padding-bottom: 10px;
+  border-radius: 18px;
+  border: 1px solid var(--orbit-admin-border);
+  background: var(--orbit-admin-surface-soft);
+  box-shadow: var(--orbit-admin-shadow);
 }
 
 #matrix-scoreboard {
   font-size: 11px;
   border-collapse: separate;
   border-spacing: 0;
-  border-top: 1px solid #dee2e6;
-  border-left: 1px solid #dee2e6;
+  border-top: 1px solid var(--orbit-admin-border);
+  border-left: 1px solid var(--orbit-admin-border);
+  color: var(--orbit-admin-text);
 }
 
 #matrix-scoreboard th,
 #matrix-scoreboard td {
   border: none;
-  border-right: 1px solid #dee2e6;
-  border-bottom: 1px solid #dee2e6;
+  border-right: 1px solid var(--orbit-admin-border);
+  border-bottom: 1px solid var(--orbit-admin-border);
   white-space: nowrap;
   background-clip: padding-box;
 }
 
-/* Sticky Header Logic */
 .sticky-header {
   position: sticky;
   top: 0;
@@ -161,11 +142,10 @@ input[type="checkbox"] {
   vertical-align: middle !important;
 }
 
-/* Sticky Column Logic */
 .sticky-cell {
   position: sticky;
   z-index: 10;
-  background-color: white !important;
+  background-color: #132139 !important;
 }
 
 .sticky-col-place {
@@ -192,7 +172,6 @@ input[type="checkbox"] {
   text-align: center;
 }
 
-/* Ensure headers for sticky columns have even higher z-index to stay above body sticky cells */
 th.sticky-col-place,
 th.sticky-col-name,
 th.sticky-col-score {
@@ -202,7 +181,7 @@ th.sticky-col-score {
 .challenge-col {
   min-width: 120px;
   max-width: 120px;
-  background-color: #343a40;
+  background-color: #162742;
 }
 
 .challenge-info {
@@ -218,6 +197,6 @@ th.sticky-col-score {
 .filter-list {
   height: 100%;
   overflow-y: auto;
-  border: 1px solid #dee2e6;
-  background: white;
+  border: 1px solid var(--orbit-admin-border);
+  background: var(--orbit-admin-surface-soft);
 }

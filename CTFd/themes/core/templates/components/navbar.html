@@ -1,16 +1,22 @@
-<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top site-nav">
   <div class="container">
-    <a href="{{ url_for('views.static_html', route='/') }}" class="navbar-brand">
+    <a href="{{ url_for('views.static_html', route='/') }}" class="navbar-brand orbit-brand">
       {% if Configs.ctf_logo %}
         <img
-            class="img-responsive ctf_logo"
+            class="img-responsive ctf_logo orbit-brand__logo"
             src="{{ url_for('views.files', path=Configs.ctf_logo) }}"
             alt="{{ Configs.ctf_name }}"
-            height="25"
+            height="30"
         >
       {% else %}
-        {{ Configs.ctf_name }}
+        <span class="orbit-brand__mark">
+          <i class="fas fa-satellite"></i>
+        </span>
       {% endif %}
+      <span class="orbit-brand__text">
+        <span class="orbit-brand__title">{{ Configs.ctf_name }}</span>
+        <span class="orbit-brand__subtitle">卫星网络安全竞赛平台</span>
+      </span>
     </a>
 
     <button

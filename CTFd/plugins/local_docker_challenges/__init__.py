@@ -21,6 +21,9 @@ DOCKER_LABEL = "ctfd.local_docker_instance"
 JANITOR_INTERVAL_SECONDS = 15
 _JANITOR_STARTED = False
 _JANITOR_LOCK = threading.Lock()
+_PLUGIN_ROOT = os.path.dirname(__file__)
+_VIEW_JS_PATH = os.path.join(_PLUGIN_ROOT, "assets", "view.js")
+_VIEW_JS_VERSION = int(os.path.getmtime(_VIEW_JS_PATH))
 
 
 class DockerCommandError(Exception):
@@ -75,7 +78,7 @@ class LocalDockerChallengeType(BaseChallenge):
     scripts = {
         "create": "/plugins/local_docker_challenges/assets/create.js",
         "update": "/plugins/local_docker_challenges/assets/update.js",
-        "view": "/plugins/local_docker_challenges/assets/view.js",
+        "view": f"/plugins/local_docker_challenges/assets/view.js?v={_VIEW_JS_VERSION}",
     }
     route = "/plugins/local_docker_challenges/assets/"
     blueprint = Blueprint(

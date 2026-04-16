@@ -1,6 +1,6 @@
-<div :class="getStyles()" role="document" x-data="Challenge" x-init='id = {{ challenge.id }}; max_attempts = {{ max_attempts }}; attempts = {{ attempts }}; ratingValue = {{ (rating.get('value') if rating else None) | tojson }}; ratingReview = {{ (rating.get('review', '') if rating else None) | tojson }};'>
-  <div class="modal-content">
-    <div class="modal-body py-4 px-4 px-sm-5">
+<div :class="getStyles()" class="challenge-modal-shell" role="document" x-data="Challenge" x-init='id = {{ challenge.id }}; max_attempts = {{ max_attempts }}; attempts = {{ attempts }}; ratingValue = {{ (rating.get('value') if rating else None) | tojson }}; ratingReview = {{ (rating.get('review', '') if rating else None) | tojson }};'>
+  <div class="modal-content challenge-modal">
+    <div class="modal-body challenge-modal__body py-4 px-4 px-sm-5">
 
       <div>
         <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -17,7 +17,7 @@
             <li class="nav-item">
               <button class="nav-link challenge-submissions" data-bs-target="#submissions" @click="showSubmissions()">
                 {% if solves != None %}
-                  Submissions
+                  提交记录
                 {% endif %}
               </button>
             </li>
@@ -85,10 +85,12 @@
             </small>
             {% endif %}
 
-            <span class="challenge-desc">{% block description %}{{ challenge.html }}{% endblock %}</span>
+            <div class="challenge-description-panel">
+              <div class="challenge-desc">{% block description %}{{ challenge.html }}{% endblock %}</div>
+            </div>
 
             {% if challenge.connection_info %}
-              <div class="mb-2">
+              <div class="challenge-connection-panel mb-2">
                 <span class="challenge-connection-info">
                   {% block connection_info %}
                     {% set conn = challenge.connection_info %}
@@ -110,16 +112,12 @@
                   <div x-data="Hint" x-init="id = {{ hint.id }}">
                     {% if hint.content %}
                     <details>
-                      <summary>{% trans %}View Hint{% endtrans %}{% if hint.title %}: {{ hint.title }}{% endif %}</summary>
+                      <summary>{{ hint.title or "提示" }}{% if hint.cost %}（消耗 {{ hint.cost }} 分）{% endif %}</summary>
                       <div>{{ hint.html | safe }}</div>
                     </details>
                     {% else %}
                     <details @toggle="showHint(event)">
-                      {% if hint.title %}
-                      <summary>{{ hint.title }} (Cost: {{ hint.cost }} point{{ hint.cost|pluralize }})</summary>
-                      {% else %}
-                      <summary>Unlock Hint for {{ hint.cost }} point{{ hint.cost|pluralize }}</summary>
-                      {% endif %}
+                      <summary>{{ hint.title or "提示" }}{% if hint.cost %}（消耗 {{ hint.cost }} 分）{% endif %}</summary>
                       <div x-html="html"></div>
                     </details>
                     {% endif %}
@@ -236,7 +234,7 @@
                       <div class="mt-3">
                         <hr>
                         <div class="text-center">
-                          <p class="mb-2">{% trans %}Rate this challenge:{% endtrans %}</p>
+                          <p class="mb-2">给这道题打分</p>
                           <div class="rating-buttons mb-2" x-init="selectedRating = ratingValue || 0;">
                             <button 
                               class="btn btn-outline-success me-2" 
@@ -258,7 +256,7 @@
                               class="form-control" 
                               rows="2" 
                               x-model="ratingReview"
-                              placeholder="{% trans %}Write a review (optional){% endtrans %}"
+                              placeholder="补充评价（选填）"
                               maxlength="2000"
                             ></textarea>
                           </div>
@@ -272,7 +270,7 @@
                             </button>
                           </div>
                           <div x-show="ratingSubmitted" class="text-success mt-2">
-                            <small>{% trans %}Thank you for your rating!{% endtrans %}</small>
+                            <small>评分已提交</small>
                           </div>
                         </div>
                       </div>
